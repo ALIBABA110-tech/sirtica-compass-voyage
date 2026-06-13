@@ -1,29 +1,918 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { motion, useInView } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import {
+  Anchor, ArrowRight, ShieldCheck, Compass, Users, Wrench, Search,
+  Ship, Cpu, CheckCircle2, ClipboardCheck, Gauge, Globe2, MapPin,
+  Phone, Mail, ChevronDown, Quote, Layers, Clock, BookOpen, FileCheck,
+  AlertTriangle, TrendingUp,
+} from "lucide-react";
+import heroImg from "@/assets/hero-vessel.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Your App" },
-      { name: "description", content: "Replace this with a one-sentence description of your app." },
-      { property: "og:title", content: "Your App" },
-      { property: "og:description", content: "Replace this with a one-sentence description of your app." },
+      { title: "Sirtica Ship Management — Premium Boutique Ship Management Partner" },
+      { name: "description", content: "Ship management without corporate layers. Direct access to maritime experts, faster technical decisions, and dedicated vessel attention from India & Cyprus." },
+      { property: "og:title", content: "Sirtica Ship Management — Premium Boutique Ship Management" },
+      { property: "og:description", content: "Direct access to experts. Faster decisions. Dedicated vessel attention. Global standards from India & Cyprus." },
+      { property: "og:url", content: "/" },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Sirtica Ship Management Pvt. Ltd.",
+          url: "/",
+          description: "Premium boutique ship management partner operating from India and Cyprus.",
+          sameAs: [],
+          address: [
+            { "@type": "PostalAddress", addressCountry: "IN" },
+            { "@type": "PostalAddress", addressCountry: "CY" },
+          ],
+          areaServed: "Worldwide",
+        }),
+      },
     ],
   }),
-  component: Index,
+  component: SirticaHome,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+/* -------------------- shared atoms -------------------- */
+
+function Section({
+  children,
+  className = "",
+  id,
+}: { children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+    <section id={id} className={`relative py-24 md:py-32 ${className}`}>
+      <div className="container-premium">{children}</div>
+    </section>
+  );
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return <div className="eyebrow mb-5 flex items-center gap-3">
+    <span className="inline-block h-px w-8 bg-[var(--emerald-tide)]" />
+    {children}
+  </div>;
+}
+
+function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
     >
+      {children}
+    </motion.div>
+  );
+}
+
+function Counter({ to, suffix = "", duration = 2 }: { to: number; suffix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min((t - start) / (duration * 1000), 1);
+      setN(Math.floor(p * to));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [inView, to, duration]);
+  return <span ref={ref}>{n}{suffix}</span>;
+}
+
+/* -------------------- NAV -------------------- */
+
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const links = [
+    ["The Difference", "#difference"],
+    ["Services", "#services"],
+    ["Process", "#process"],
+    ["Intelligence", "#intelligence"],
+    ["Knowledge", "#knowledge"],
+    ["Contact", "#contact"],
+  ];
+  return (
+    <header
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+        scrolled ? "bg-[var(--navy)]/90 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+      }`}
+    >
+      <div className="container-premium flex h-20 items-center justify-between">
+        <a href="#top" className="flex items-center gap-2.5 text-white">
+          <span className="grid h-9 w-9 place-items-center rounded-sm gradient-emerald">
+            <Anchor className="h-4 w-4 text-[var(--navy)]" strokeWidth={2.5} />
+          </span>
+          <span className="font-display text-lg tracking-tight">SIRTICA</span>
+        </a>
+        <nav className="hidden items-center gap-8 lg:flex">
+          {links.map(([label, href]) => (
+            <a key={href} href={href} className="text-sm text-white/70 transition hover:text-white">
+              {label}
+            </a>
+          ))}
+        </nav>
+        <a
+          href="#contact"
+          className="group inline-flex items-center gap-2 rounded-sm bg-white px-5 py-2.5 text-sm font-medium text-[var(--navy)] transition hover:bg-[var(--emerald-tide)]"
+        >
+          Request Consultation
+          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+        </a>
+      </div>
+    </header>
+  );
+}
+
+/* -------------------- 1. HERO -------------------- */
+
+function Hero() {
+  return (
+    <section id="top" className="relative min-h-screen overflow-hidden bg-[var(--navy)] text-white">
       <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+        src={heroImg}
+        alt="Premium cargo vessel under management at sea"
+        width={1920}
+        height={1280}
+        className="absolute inset-0 h-full w-full object-cover opacity-50"
+      />
+      <div className="absolute inset-0 gradient-hero opacity-80" />
+      <div className="absolute inset-0 bg-grid opacity-40" />
+      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[var(--navy)] to-transparent" />
+
+      <div className="container-premium relative flex min-h-screen flex-col justify-end pb-24 pt-40">
+        <FadeIn>
+          <Eyebrow>Premium Boutique Ship Management · India · Cyprus</Eyebrow>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <h1 className="max-w-4xl text-balance text-5xl leading-[1.05] md:text-7xl lg:text-[5.5rem]">
+            Ship Management <span className="italic text-[var(--emerald-glow)]">without</span> corporate layers.
+          </h1>
+        </FadeIn>
+        <FadeIn delay={0.2}>
+          <p className="mt-8 max-w-2xl text-lg text-white/70 md:text-xl">
+            Direct access to maritime experts, faster technical decisions, dedicated vessel
+            support, and global standards — delivered from India and Cyprus.
+          </p>
+        </FadeIn>
+        <FadeIn delay={0.3}>
+          <div className="mt-10 flex flex-wrap items-center gap-4">
+            <a
+              href="#contact"
+              className="group inline-flex items-center gap-2 rounded-sm gradient-emerald px-7 py-4 text-sm font-semibold text-[var(--navy)] shadow-glow transition hover:brightness-110"
+            >
+              Request Consultation
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+            </a>
+            <a
+              href="#services"
+              className="inline-flex items-center gap-2 rounded-sm border border-white/20 px-7 py-4 text-sm font-medium text-white transition hover:bg-white/5"
+            >
+              Explore Services
+            </a>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.5}>
+          <div className="mt-20 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-white/10 pt-10 md:grid-cols-4">
+            {[
+              ["Technical Management", Wrench],
+              ["Crew Management", Users],
+              ["Inspection Expertise", Search],
+              ["24/7 Vessel Support", Clock],
+            ].map(([label, Icon]) => {
+              const I = Icon as typeof Wrench;
+              return (
+                <div key={label as string} className="flex items-center gap-3 text-sm text-white/80">
+                  <I className="h-5 w-5 text-[var(--emerald-tide)]" strokeWidth={1.75} />
+                  {label as string}
+                </div>
+              );
+            })}
+          </div>
+        </FadeIn>
+
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50">
+          <ChevronDown className="h-5 w-5 animate-bounce" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- 2. METRICS -------------------- */
+
+function Metrics() {
+  const items = [
+    { v: 50, s: "+", label: "Years combined leadership experience", note: "Senior officers, superintendents, inspectors" },
+    { v: 2, s: "", label: "Strategic operating hubs", note: "India & Cyprus" },
+    { v: 24, s: "/7", label: "Vessel support availability", note: "Direct line to decision-makers" },
+    { v: 100, s: "%", label: "Senior-level vessel oversight", note: "Every vessel, every voyage" },
+  ];
+  return (
+    <Section className="bg-white" id="metrics">
+      <FadeIn><Eyebrow>Performance at a glance</Eyebrow></FadeIn>
+      <FadeIn delay={0.05}>
+        <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+          Verified expertise. Measurable involvement. Global reach.
+        </h2>
+      </FadeIn>
+      <div className="mt-16 grid gap-px overflow-hidden rounded-sm bg-border md:grid-cols-4">
+        {items.map((it, i) => (
+          <FadeIn key={it.label} delay={i * 0.08}>
+            <div className="h-full bg-white p-8 md:p-10">
+              <div className="text-5xl font-display font-medium text-[var(--navy)] md:text-6xl">
+                <Counter to={it.v} suffix={it.s} />
+              </div>
+              <div className="mt-4 text-sm font-medium text-[var(--navy)]">{it.label}</div>
+              <div className="mt-2 text-xs text-muted-foreground">{it.note}</div>
+            </div>
+          </FadeIn>
+        ))}
+      </div>
+      <p className="mt-6 text-xs text-muted-foreground">
+        Metrics reflect Sirtica's operating model. Specific fleet figures available on request.
+      </p>
+    </Section>
+  );
+}
+
+/* -------------------- 3. THE SIRTICA DIFFERENCE -------------------- */
+
+function Difference() {
+  const big = [
+    "Multiple management layers between you and decisions",
+    "Slower technical response cycles",
+    "Standardised service across portfolios",
+    "Large client portfolios competing for attention",
+    "Corporate processes optimised for scale",
+  ];
+  const us = [
+    "Direct access to leadership on every issue",
+    "Faster technical response — hours, not days",
+    "Customised strategy tailored to each vessel",
+    "Dedicated vessel attention from senior staff",
+    "Relationship-driven support, not ticket queues",
+  ];
+  return (
+    <section id="difference" className="relative overflow-hidden bg-[var(--navy)] py-24 text-white md:py-32">
+      <div className="absolute inset-0 bg-grid opacity-30" />
+      <div className="container-premium relative">
+        <FadeIn><Eyebrow>The Sirtica Difference</Eyebrow></FadeIn>
+        <FadeIn delay={0.05}>
+          <h2 className="max-w-4xl text-balance text-4xl md:text-6xl">
+            Most ship managers operate at scale. <span className="italic text-[var(--emerald-glow)]">We operate with precision.</span>
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.15}>
+          <p className="mt-6 max-w-2xl text-lg text-white/70">
+            The boutique model removes the layers that slow large managers down — so your fleet
+            gets the senior attention it actually deserves.
+          </p>
+        </FadeIn>
+
+        <div className="mt-16 grid gap-6 md:grid-cols-2">
+          <FadeIn delay={0.1}>
+            <div className="h-full rounded-sm border border-white/10 bg-white/[0.03] p-8 md:p-10">
+              <div className="eyebrow !text-white/50">Large ship managers</div>
+              <h3 className="mt-3 text-2xl text-white/90">Built for volume</h3>
+              <ul className="mt-8 space-y-4">
+                {big.map((t) => (
+                  <li key={t} className="flex items-start gap-3 text-sm text-white/60">
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-white/30" strokeWidth={1.5} />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <div className="relative h-full overflow-hidden rounded-sm border border-[var(--emerald-tide)]/40 bg-gradient-to-br from-[var(--emerald-tide)]/10 to-transparent p-8 shadow-glow md:p-10">
+              <div className="eyebrow">Sirtica</div>
+              <h3 className="mt-3 text-2xl">Built for precision</h3>
+              <ul className="mt-8 space-y-4">
+                {us.map((t) => (
+                  <li key={t} className="flex items-start gap-3 text-sm text-white">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[var(--emerald-tide)]" strokeWidth={2} />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </FadeIn>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- 4. SERVICES -------------------- */
+
+function Services() {
+  const services = [
+    { icon: Ship, title: "Ship Management", desc: "Full technical, operational and commercial oversight with senior superintendents on every vessel.", outcome: "Optimised vessel performance & lifecycle ROI." },
+    { icon: Users, title: "Crew Management", desc: "Recruitment, certification, welfare and retention through a vetted maritime talent pipeline.", outcome: "Stable, certified, well-supported crews." },
+    { icon: ShieldCheck, title: "Safety Management", desc: "ISM/ISPS compliant safety systems built around real onboard culture, not paperwork.", outcome: "Lower incident rates & cleaner audits." },
+    { icon: Search, title: "Vessel Inspection", desc: "Condition surveys, vetting prep, and RightShip-grade pre-inspection.", outcome: "Inspection-ready vessels, every time." },
+    { icon: ClipboardCheck, title: "Pre-Purchase Inspection", desc: "Independent technical due diligence before you commit capital.", outcome: "Confident, data-backed acquisitions." },
+    { icon: Wrench, title: "Dry Docking", desc: "Specification, yard selection, project management and on-site supervision.", outcome: "On-time, on-budget dockings." },
+    { icon: Cpu, title: "Marine Digital Solutions", desc: "Fleet intelligence, planned maintenance and compliance dashboards.", outcome: "Visibility into every vessel, in real time." },
+  ];
+  return (
+    <Section className="bg-white" id="services">
+      <FadeIn><Eyebrow>Services</Eyebrow></FadeIn>
+      <FadeIn delay={0.05}>
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+            A complete management capability, delivered with boutique attention.
+          </h2>
+          <a href="#contact" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--navy)] hover:text-[var(--emerald-tide)]">
+            Discuss your fleet <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
+      </FadeIn>
+      <div className="mt-16 grid gap-px overflow-hidden rounded-sm bg-border md:grid-cols-2 lg:grid-cols-3">
+        {services.map((s, i) => (
+          <FadeIn key={s.title} delay={(i % 3) * 0.06}>
+            <article className="group h-full bg-white p-8 transition hover:bg-[var(--navy)] hover:text-white md:p-10">
+              <s.icon className="h-8 w-8 text-[var(--emerald-tide)]" strokeWidth={1.5} />
+              <h3 className="mt-8 text-2xl">{s.title}</h3>
+              <p className="mt-3 text-sm text-muted-foreground transition group-hover:text-white/70">{s.desc}</p>
+              <div className="mt-8 border-t border-border pt-5 transition group-hover:border-white/10">
+                <div className="eyebrow !text-[var(--emerald-tide)]">Outcome</div>
+                <div className="mt-2 text-sm font-medium">{s.outcome}</div>
+              </div>
+            </article>
+          </FadeIn>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* -------------------- 5. PROCESS -------------------- */
+
+function Process() {
+  const steps = [
+    { n: "01", t: "Technical Review", d: "Deep-dive on vessel condition, systems, maintenance history and certification status." },
+    { n: "02", t: "Risk Assessment", d: "Operational, regulatory and commercial risk mapped against your trading pattern." },
+    { n: "03", t: "Crew Evaluation", d: "Existing crew assessed; gaps closed through Sirtica's vetted talent pipeline." },
+    { n: "04", t: "Compliance Audit", d: "ISM, ISPS, MLC, flag and vetting readiness audited and rectified." },
+    { n: "05", t: "Full Management Implementation", d: "Seamless handover with dedicated superintendent and 24/7 escalation." },
+  ];
+  return (
+    <section id="process" className="relative bg-[var(--mist)] py-24 md:py-32">
+      <div className="container-premium">
+        <FadeIn><Eyebrow>How we take over your vessel</Eyebrow></FadeIn>
+        <FadeIn delay={0.05}>
+          <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+            A transparent 5-step handover, designed to build confidence on day one.
+          </h2>
+        </FadeIn>
+        <div className="mt-20 grid gap-12 md:grid-cols-5 md:gap-6">
+          {steps.map((s, i) => (
+            <FadeIn key={s.n} delay={i * 0.08}>
+              <div className="relative">
+                <div className="font-mono text-xs text-[var(--emerald-tide)]">{s.n}</div>
+                <div className="mt-3 h-px w-full bg-border">
+                  <div className="h-px w-1/2 gradient-emerald" />
+                </div>
+                <h3 className="mt-6 text-xl text-[var(--navy)]">{s.t}</h3>
+                <p className="mt-3 text-sm text-muted-foreground">{s.d}</p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- 6. LEADERSHIP -------------------- */
+
+function Leadership() {
+  const team = [
+    { name: "Leadership Profile", role: "Managing Director", note: "Decades in technical management & vetting" },
+    { name: "Leadership Profile", role: "Director, Operations", note: "Senior superintendent background" },
+    { name: "Leadership Profile", role: "Head of Crewing", role2: "", note: "Maritime HR & welfare specialist" },
+    { name: "Leadership Profile", role: "Head of Inspections", note: "RightShip & vetting expertise" },
+  ];
+  return (
+    <Section className="bg-white" id="leadership">
+      <FadeIn><Eyebrow>Meet the experts behind every vessel</Eyebrow></FadeIn>
+      <FadeIn delay={0.05}>
+        <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+          Senior maritime professionals — accessible, accountable, hands-on.
+        </h2>
+      </FadeIn>
+      <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {team.map((m, i) => (
+          <FadeIn key={i} delay={i * 0.06}>
+            <div className="group relative overflow-hidden rounded-sm bg-[var(--mist)]">
+              <div className="aspect-[4/5] w-full bg-gradient-to-br from-[var(--deep-ocean)] to-[var(--navy)]">
+                <div className="flex h-full items-center justify-center text-white/30">
+                  <Users className="h-16 w-16" strokeWidth={1} />
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="text-sm text-[var(--navy)] font-medium">{m.name}</div>
+                <div className="mt-1 text-xs text-muted-foreground">{m.role}</div>
+                <div className="mt-3 text-xs text-muted-foreground/80">{m.note}</div>
+              </div>
+            </div>
+          </FadeIn>
+        ))}
+      </div>
+      <p className="mt-6 text-xs text-muted-foreground">
+        Placeholder profiles — to be replaced with named leadership and photography supplied by Sirtica.
+      </p>
+    </Section>
+  );
+}
+
+/* -------------------- 7. CASE STUDIES -------------------- */
+
+function CaseStudies() {
+  const cases = [
+    { tag: "Tanker · 2024", challenge: "Vessel facing repeated vetting observations", action: "Full technical audit + targeted crew retraining + pre-inspection programme", result: "Cleared subsequent vetting with zero observations" },
+    { tag: "Bulk Carrier · 2024", challenge: "Aging vessel approaching special survey", action: "End-to-end dry-dock specification & yard supervision", result: "Delivered on schedule and within approved budget" },
+    { tag: "Pre-Purchase · 2023", challenge: "Buyer evaluating second-hand acquisition", action: "Independent condition survey & technical due diligence", result: "Negotiation leverage on identified deferred maintenance" },
+  ];
+  return (
+    <section className="relative bg-[var(--navy)] py-24 text-white md:py-32">
+      <div className="container-premium">
+        <FadeIn><Eyebrow>Case studies</Eyebrow></FadeIn>
+        <FadeIn delay={0.05}>
+          <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+            Real vessels. Real outcomes.
+          </h2>
+        </FadeIn>
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
+          {cases.map((c, i) => (
+            <FadeIn key={i} delay={i * 0.08}>
+              <article className="group h-full rounded-sm border border-white/10 bg-white/[0.03] p-8 transition hover:border-[var(--emerald-tide)]/40">
+                <div className="font-mono text-xs text-[var(--emerald-tide)]">{c.tag}</div>
+                <div className="mt-6 space-y-5 text-sm">
+                  <div>
+                    <div className="eyebrow !text-white/40">Challenge</div>
+                    <p className="mt-2 text-white/85">{c.challenge}</p>
+                  </div>
+                  <div>
+                    <div className="eyebrow !text-white/40">Action</div>
+                    <p className="mt-2 text-white/85">{c.action}</p>
+                  </div>
+                  <div className="border-t border-white/10 pt-5">
+                    <div className="eyebrow">Result</div>
+                    <p className="mt-2 font-medium text-white">{c.result}</p>
+                  </div>
+                </div>
+              </article>
+            </FadeIn>
+          ))}
+        </div>
+        <p className="mt-6 text-xs text-white/40">
+          Illustrative case framings — final, client-verified case studies available on request.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- 8. FLEET INTELLIGENCE -------------------- */
+
+function Intelligence() {
+  const features = [
+    { icon: Gauge, t: "Fleet performance dashboards", d: "Single view of every vessel's KPIs, fuel, and operational state." },
+    { icon: Wrench, t: "Planned maintenance", d: "Component-level PMS with predictive alerts and history." },
+    { icon: Search, t: "Inspection monitoring", d: "Observations, root cause and close-out tracked to completion." },
+    { icon: FileCheck, t: "Compliance tracking", d: "Certificates, surveys and audits — never miss a date." },
+    { icon: ShieldCheck, t: "Risk visibility", d: "Trading-pattern, port and vetting risk surfaced before it bites." },
+    { icon: TrendingUp, t: "Business outcomes", d: "Translate vessel data into commercial decisions — not noise." },
+  ];
+  return (
+    <Section className="bg-[var(--mist)]" id="intelligence">
+      <FadeIn><Eyebrow>Fleet intelligence</Eyebrow></FadeIn>
+      <FadeIn delay={0.05}>
+        <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+          Maritime data, translated into <span className="italic text-[var(--emerald-tide)]">business decisions</span>.
+        </h2>
+      </FadeIn>
+      <div className="mt-16 grid gap-px overflow-hidden rounded-sm bg-border md:grid-cols-2 lg:grid-cols-3">
+        {features.map((f, i) => (
+          <FadeIn key={f.t} delay={(i % 3) * 0.06}>
+            <div className="h-full bg-white p-8">
+              <f.icon className="h-7 w-7 text-[var(--navy)]" strokeWidth={1.5} />
+              <h3 className="mt-6 text-lg text-[var(--navy)]">{f.t}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{f.d}</p>
+            </div>
+          </FadeIn>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* -------------------- 9. TESTIMONIALS -------------------- */
+
+function Testimonials() {
+  const items = [
+    { q: "What used to take days through layers of management now takes hours. We deal directly with people who can decide.", a: "Technical Director", c: "Owner — Tanker Operations" },
+    { q: "Their pre-purchase inspection paid for itself many times over in the negotiation that followed.", a: "Managing Partner", c: "Investment Fund" },
+    { q: "Inspection readiness has gone from anxiety to routine. The senior attention is the difference.", a: "Fleet Manager", c: "Bulk Carrier Owner" },
+  ];
+  return (
+    <Section className="bg-white">
+      <FadeIn><Eyebrow>Voices from the bridge</Eyebrow></FadeIn>
+      <FadeIn delay={0.05}>
+        <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">Trusted by shipowners who value direct access.</h2>
+      </FadeIn>
+      <div className="mt-16 grid gap-6 md:grid-cols-3">
+        {items.map((t, i) => (
+          <FadeIn key={i} delay={i * 0.08}>
+            <figure className="h-full rounded-sm border border-border bg-[var(--mist)] p-8">
+              <Quote className="h-7 w-7 text-[var(--emerald-tide)]" strokeWidth={1.5} />
+              <blockquote className="mt-6 text-lg leading-relaxed text-[var(--navy)]">"{t.q}"</blockquote>
+              <figcaption className="mt-8 border-t border-border pt-5 text-sm">
+                <div className="font-medium text-[var(--navy)]">{t.a}</div>
+                <div className="text-muted-foreground">{t.c}</div>
+              </figcaption>
+            </figure>
+          </FadeIn>
+        ))}
+      </div>
+      <p className="mt-6 text-xs text-muted-foreground">
+        Anonymised testimonial framings pending client approval for naming.
+      </p>
+    </Section>
+  );
+}
+
+/* -------------------- 10. KNOWLEDGE CENTER -------------------- */
+
+function Knowledge() {
+  const posts = [
+    { cat: "RightShip", t: "A practical guide to RightShip readiness", d: "Pre-inspection workstreams that consistently clear observations." },
+    { cat: "Dry Docking", t: "Building a dry-dock spec that protects budget", d: "How early specification de-risks yard overruns." },
+    { cat: "Vetting", t: "Why most vetting failures are leadership failures", d: "The senior-attention pattern behind clean inspections." },
+    { cat: "Compliance", t: "ISM beyond the binder", d: "Designing safety culture, not safety paperwork." },
+    { cat: "Fleet Optimisation", t: "Fuel, KPIs and the cost of vague data", d: "What a useful fleet dashboard actually looks like." },
+    { cat: "Maritime Insights", t: "The boutique advantage in ship management", d: "Where smaller, senior-led managers outperform." },
+  ];
+  return (
+    <Section className="bg-[var(--mist)]" id="knowledge">
+      <FadeIn>
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <Eyebrow>Knowledge center</Eyebrow>
+            <h2 className="max-w-2xl text-balance text-4xl md:text-5xl">
+              Insights from people who run vessels — not write blog posts.
+            </h2>
+          </div>
+          <a href="#contact" className="inline-flex items-center gap-2 text-sm font-medium text-[var(--navy)] hover:text-[var(--emerald-tide)]">
+            Subscribe for updates <ArrowRight className="h-4 w-4" />
+          </a>
+        </div>
+      </FadeIn>
+      <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {posts.map((p, i) => (
+          <FadeIn key={i} delay={(i % 3) * 0.06}>
+            <article className="group h-full rounded-sm border border-border bg-white p-8 transition hover:border-[var(--emerald-tide)]/50 hover:shadow-premium">
+              <div className="flex items-center gap-2 text-xs">
+                <BookOpen className="h-3.5 w-3.5 text-[var(--emerald-tide)]" />
+                <span className="font-mono uppercase tracking-widest text-[var(--emerald-tide)]">{p.cat}</span>
+              </div>
+              <h3 className="mt-5 text-xl text-[var(--navy)]">{p.t}</h3>
+              <p className="mt-3 text-sm text-muted-foreground">{p.d}</p>
+              <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--navy)] transition group-hover:gap-2.5 group-hover:text-[var(--emerald-tide)]">
+                Read insight <ArrowRight className="h-4 w-4" />
+              </div>
+            </article>
+          </FadeIn>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* -------------------- 11. GLOBAL PRESENCE -------------------- */
+
+function Global() {
+  return (
+    <section className="relative overflow-hidden bg-[var(--navy)] py-24 text-white md:py-32">
+      <div className="absolute inset-0 bg-grid opacity-30" />
+      <div className="container-premium relative grid gap-16 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+        <FadeIn>
+          <Eyebrow>Global presence</Eyebrow>
+          <h2 className="mt-2 text-balance text-4xl md:text-5xl">
+            Operating hubs in India & Cyprus. Vessels supported worldwide.
+          </h2>
+          <p className="mt-6 max-w-md text-white/70">
+            Two strategic time-zone hubs give your fleet senior-level coverage across the
+            major shipping lanes — without handing you off to a call centre.
+          </p>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
+            {[
+              { c: "India", r: "Technical & crewing headquarters" },
+              { c: "Cyprus", r: "European operations & client desk" },
+            ].map((h) => (
+              <div key={h.c} className="rounded-sm border border-white/10 bg-white/[0.03] p-5">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <MapPin className="h-4 w-4 text-[var(--emerald-tide)]" />
+                  {h.c}
+                </div>
+                <div className="mt-2 text-xs text-white/60">{h.r}</div>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
+        <FadeIn delay={0.15}>
+          <div className="relative aspect-[4/3] w-full">
+            <div className="absolute inset-0 rounded-sm border border-white/10 bg-gradient-to-br from-[var(--deep-ocean)] to-[var(--navy)]" />
+            <Globe2 className="absolute inset-0 m-auto h-72 w-72 text-[var(--emerald-tide)]/20" strokeWidth={0.5} />
+            <div className="absolute left-[28%] top-[55%]">
+              <Pin label="India" />
+            </div>
+            <div className="absolute left-[52%] top-[38%]">
+              <Pin label="Cyprus" />
+            </div>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+function Pin({ label }: { label: string }) {
+  return (
+    <div className="relative">
+      <div className="absolute -inset-3 animate-ping rounded-full bg-[var(--emerald-tide)]/30" />
+      <div className="relative grid h-3 w-3 place-items-center rounded-full gradient-emerald shadow-glow" />
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 rounded-sm border border-white/10 bg-[var(--navy)]/80 px-2 py-1 text-[10px] font-mono uppercase tracking-widest text-white backdrop-blur">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+/* -------------------- 12. LEAD GEN -------------------- */
+
+function LeadGen() {
+  const offers = [
+    { icon: FileCheck, t: "RightShip Readiness Checklist", d: "The pre-inspection workstream we use on every vessel." },
+    { icon: Wrench, t: "Dry Dock Preparation Guide", d: "A spec-building framework that protects budget and schedule." },
+    { icon: Search, t: "Vessel Inspection Checklist", d: "Condition survey and vetting prep in one downloadable file." },
+    { icon: Phone, t: "Free 30-Minute Consultation", d: "A direct call with a senior superintendent — no intermediaries." },
+  ];
+  return (
+    <Section className="bg-white">
+      <FadeIn><Eyebrow>Take the next step</Eyebrow></FadeIn>
+      <FadeIn delay={0.05}>
+        <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+          Free resources, built from real fleet operations.
+        </h2>
+      </FadeIn>
+      <div className="mt-16 grid gap-6 md:grid-cols-2">
+        {offers.map((o, i) => (
+          <FadeIn key={o.t} delay={i * 0.06}>
+            <a
+              href="#contact"
+              className="group flex h-full items-start gap-5 rounded-sm border border-border bg-[var(--mist)] p-8 transition hover:border-[var(--emerald-tide)]/60 hover:shadow-premium"
+            >
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-sm gradient-emerald">
+                <o.icon className="h-5 w-5 text-[var(--navy)]" strokeWidth={2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-lg font-medium text-[var(--navy)]">{o.t}</div>
+                <div className="mt-2 text-sm text-muted-foreground">{o.d}</div>
+                <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--navy)] transition group-hover:gap-2.5 group-hover:text-[var(--emerald-tide)]">
+                  Request access <ArrowRight className="h-4 w-4" />
+                </div>
+              </div>
+            </a>
+          </FadeIn>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* -------------------- 13. FAQ -------------------- */
+
+function FAQ() {
+  const faqs = [
+    { q: "What kinds of vessels does Sirtica manage?", a: "Tankers, bulk carriers and general cargo vessels — with management plans tailored to each owner's commercial pattern." },
+    { q: "How is Sirtica different from larger ship managers?", a: "Senior staff are directly involved with every vessel. There are no intermediate layers between your fleet and the people making decisions." },
+    { q: "Where are you based?", a: "We operate from India and Cyprus, with capability to support vessels trading worldwide." },
+    { q: "What does the onboarding process look like?", a: "A 5-step handover: technical review, risk assessment, crew evaluation, compliance audit and full management implementation." },
+    { q: "Can Sirtica handle a single vessel?", a: "Yes — boutique scale is the point. Single-vessel owners often get more attention with us than they would in a large portfolio." },
+    { q: "Do you offer inspection-only engagements?", a: "Yes. Pre-purchase inspections, vetting prep and condition surveys are available as standalone services." },
+  ];
+  return (
+    <Section className="bg-[var(--mist)]" id="faq">
+      <FadeIn><Eyebrow>Frequently asked</Eyebrow></FadeIn>
+      <FadeIn delay={0.05}>
+        <h2 className="max-w-3xl text-balance text-4xl md:text-5xl">
+          The questions shipowners actually ask.
+        </h2>
+      </FadeIn>
+      <div className="mx-auto mt-16 max-w-3xl divide-y divide-border rounded-sm border border-border bg-white">
+        {faqs.map((f, i) => (
+          <details key={i} className="group p-6 md:p-8" {...(i === 0 ? { open: true } : {})}>
+            <summary className="flex cursor-pointer list-none items-start justify-between gap-6">
+              <span className="text-base font-medium text-[var(--navy)] md:text-lg">{f.q}</span>
+              <ChevronDown className="mt-1 h-5 w-5 shrink-0 text-[var(--navy)] transition group-open:rotate-180" />
+            </summary>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+          </details>
+        ))}
+      </div>
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          }),
+        }}
+      />
+    </Section>
+  );
+}
+
+/* -------------------- CONTACT + FOOTER -------------------- */
+
+function Contact() {
+  return (
+    <section id="contact" className="relative overflow-hidden bg-[var(--navy)] py-24 text-white md:py-32">
+      <div className="absolute inset-0 bg-grid opacity-30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[var(--navy)] via-[var(--deep-ocean)] to-[var(--navy)]" />
+      <div className="container-premium relative grid gap-16 lg:grid-cols-2 lg:items-start">
+        <FadeIn>
+          <Eyebrow>Request consultation</Eyebrow>
+          <h2 className="mt-2 text-balance text-4xl md:text-6xl">
+            Talk to a senior superintendent — not a sales desk.
+          </h2>
+          <p className="mt-6 max-w-md text-white/70">
+            Tell us about your vessel or fleet. We'll respond within one business day with a
+            direct line to a senior team member.
+          </p>
+          <div className="mt-10 space-y-4 text-sm">
+            <div className="flex items-center gap-3 text-white/80">
+              <Mail className="h-4 w-4 text-[var(--emerald-tide)]" /> contact@sirtica.com
+            </div>
+            <div className="flex items-center gap-3 text-white/80">
+              <Phone className="h-4 w-4 text-[var(--emerald-tide)]" /> +91 / +357 (India & Cyprus desks)
+            </div>
+            <div className="flex items-center gap-3 text-white/60">
+              <Layers className="h-4 w-4 text-[var(--emerald-tide)]" /> Contact details to be confirmed by Sirtica
+            </div>
+          </div>
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <form
+            onSubmit={(e) => { e.preventDefault(); alert("Thank you — a senior team member will be in touch."); }}
+            className="rounded-sm border border-white/10 bg-white/[0.03] p-8 backdrop-blur-sm md:p-10"
+          >
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field label="Full name" name="name" required />
+              <Field label="Company" name="company" required />
+              <Field label="Email" name="email" type="email" required />
+              <Field label="Phone" name="phone" type="tel" />
+            </div>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <Field label="Vessel type" name="vessel" placeholder="Tanker / Bulker / Other" />
+              <Field label="Fleet size" name="fleet" placeholder="1, 2–5, 6+" />
+            </div>
+            <div className="mt-5">
+              <label className="block text-xs font-medium text-white/70">How can we help?</label>
+              <textarea
+                name="message"
+                rows={4}
+                maxLength={1000}
+                className="mt-2 w-full rounded-sm border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:border-[var(--emerald-tide)] focus:outline-none"
+                placeholder="Tell us about your vessel and what you're looking to achieve."
+              />
+            </div>
+            <button
+              type="submit"
+              className="group mt-8 inline-flex w-full items-center justify-center gap-2 rounded-sm gradient-emerald px-6 py-4 text-sm font-semibold text-[var(--navy)] shadow-glow transition hover:brightness-110"
+            >
+              Request Consultation
+              <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+            </button>
+            <p className="mt-4 text-center text-xs text-white/40">
+              We respond within one business day.
+            </p>
+          </form>
+        </FadeIn>
+      </div>
+    </section>
+  );
+}
+
+function Field({ label, name, type = "text", placeholder, required }: { label: string; name: string; type?: string; placeholder?: string; required?: boolean }) {
+  return (
+    <div>
+      <label className="block text-xs font-medium text-white/70">{label}{required && <span className="text-[var(--emerald-tide)]"> *</span>}</label>
+      <input
+        type={type}
+        name={name}
+        required={required}
+        maxLength={255}
+        placeholder={placeholder}
+        className="mt-2 w-full rounded-sm border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:border-[var(--emerald-tide)] focus:outline-none"
       />
     </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="bg-[var(--navy)] pb-12 pt-20 text-white/70">
+      <div className="container-premium">
+        <div className="grid gap-12 border-b border-white/10 pb-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div>
+            <div className="flex items-center gap-2.5 text-white">
+              <span className="grid h-9 w-9 place-items-center rounded-sm gradient-emerald">
+                <Anchor className="h-4 w-4 text-[var(--navy)]" strokeWidth={2.5} />
+              </span>
+              <span className="font-display text-lg">SIRTICA</span>
+            </div>
+            <p className="mt-5 max-w-xs text-sm">
+              The premium boutique ship management partner. Direct expert access, faster
+              decisions, dedicated vessel attention.
+            </p>
+          </div>
+          <FooterCol title="Services" links={["Ship Management", "Crew Management", "Safety Management", "Vessel Inspection", "Dry Docking", "Marine Digital"]} />
+          <FooterCol title="Company" links={["The Difference", "Leadership", "Case Studies", "Knowledge Center"]} />
+          <FooterCol title="Offices" links={["India HQ", "Cyprus", "contact@sirtica.com"]} />
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-8 text-xs text-white/40">
+          <div>© {new Date().getFullYear()} Sirtica Ship Management Pvt. Ltd. All rights reserved.</div>
+          <div className="flex items-center gap-2">
+            <Compass className="h-3.5 w-3.5" /> India · Cyprus · Worldwide
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function FooterCol({ title, links }: { title: string; links: string[] }) {
+  return (
+    <div>
+      <div className="text-xs font-mono uppercase tracking-widest text-[var(--emerald-tide)]">{title}</div>
+      <ul className="mt-5 space-y-3 text-sm">
+        {links.map((l) => <li key={l}><a href="#contact" className="transition hover:text-white">{l}</a></li>)}
+      </ul>
+    </div>
+  );
+}
+
+/* -------------------- PAGE -------------------- */
+
+function SirticaHome() {
+  return (
+    <main className="min-h-screen bg-background">
+      <Nav />
+      <Hero />
+      <Metrics />
+      <Difference />
+      <Services />
+      <Process />
+      <Leadership />
+      <CaseStudies />
+      <Intelligence />
+      <Testimonials />
+      <Knowledge />
+      <Global />
+      <LeadGen />
+      <FAQ />
+      <Contact />
+      <Footer />
+    </main>
   );
 }
