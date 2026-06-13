@@ -8,6 +8,7 @@ import {
   AlertTriangle, TrendingUp,
 } from "lucide-react";
 import heroImg from "@/assets/hero-vessel.jpg";
+import sirticaLogo from "@/assets/sirtica-logo.png.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -116,11 +117,8 @@ function Nav() {
       }`}
     >
       <div className="container-premium flex h-20 items-center justify-between">
-        <a href="#top" className="flex items-center gap-2.5 text-white">
-          <span className="grid h-9 w-9 place-items-center rounded-sm gradient-emerald">
-            <Anchor className="h-4 w-4 text-[var(--navy)]" strokeWidth={2.5} />
-          </span>
-          <span className="font-display text-lg tracking-tight">SIRTICA</span>
+        <a href="#top" className="flex items-center text-white" aria-label="Sirtica Maritime">
+          <img src={sirticaLogo.url} alt="Sirtica Maritime Pvt. Ltd." className="h-12 w-auto bg-white rounded-sm px-2 py-1" />
         </a>
         <nav className="hidden items-center gap-8 lg:flex">
           {links.map(([label, href]) => (
@@ -855,11 +853,8 @@ function Footer() {
       <div className="container-premium">
         <div className="grid gap-12 border-b border-white/10 pb-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2.5 text-white">
-              <span className="grid h-9 w-9 place-items-center rounded-sm gradient-emerald">
-                <Anchor className="h-4 w-4 text-[var(--navy)]" strokeWidth={2.5} />
-              </span>
-              <span className="font-display text-lg">SIRTICA</span>
+            <div className="flex items-center text-white">
+              <img src={sirticaLogo.url} alt="Sirtica Maritime Pvt. Ltd." className="h-14 w-auto bg-white rounded-sm px-2 py-1" />
             </div>
             <p className="mt-5 max-w-xs text-sm">
               The premium boutique ship management partner. Direct expert access, faster
