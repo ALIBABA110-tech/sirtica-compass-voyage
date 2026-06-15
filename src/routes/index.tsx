@@ -98,7 +98,7 @@ function Counter({ to, suffix = "", duration = 2 }: { to: number; suffix?: strin
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -112,27 +112,49 @@ function Nav() {
   ];
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "bg-[var(--navy)]/90 backdrop-blur-xl border-b border-white/5" : "bg-transparent"
+      className={`fixed inset-x-0 top-0 z-50 bg-white transition-all duration-500 ${
+        scrolled
+          ? "shadow-[0_8px_30px_-12px_rgba(4,27,61,0.18)] border-b border-black/5"
+          : "border-b border-black/5"
       }`}
     >
-      <div className="container-premium flex h-20 items-center justify-between">
-        <a href="#top" className="flex items-center text-white" aria-label="Sirtica Maritime">
-          <img src={sirticaLogo.url} alt="Sirtica Maritime Pvt. Ltd." className="h-12 w-auto bg-white rounded-sm px-2 py-1" />
-        </a>
-        <nav className="hidden items-center gap-8 lg:flex">
+      <div className="container-premium flex h-24 items-center justify-between py-3 md:h-28">
+        <motion.a
+          href="#top"
+          aria-label="Sirtica Maritime Pvt. Ltd."
+          className="flex items-center"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ y: -1 }}
+        >
+          <motion.img
+            src={sirticaLogo.url}
+            alt="Sirtica Maritime Pvt. Ltd."
+            className="h-16 w-auto md:h-20"
+            animate={{ y: [0, -2, 0] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.a>
+        <nav className="hidden items-center gap-9 lg:flex">
           {links.map(([label, href]) => (
-            <a key={href} href={href} className="text-sm text-white/70 transition hover:text-white">
+            <a
+              key={href}
+              href={href}
+              className="group relative text-sm font-medium tracking-wide text-[#0A1F44] transition-colors duration-300 hover:text-[#009245]"
+            >
               {label}
+              <span className="absolute -bottom-1.5 left-0 h-[2px] w-0 bg-gradient-to-r from-[#009245] to-[#00D4AA] transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
         </nav>
         <a
           href="#contact"
-          className="group inline-flex items-center gap-2 rounded-sm bg-white px-5 py-2.5 text-sm font-medium text-[var(--navy)] transition hover:bg-[var(--emerald-tide)]"
+          className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[#0A1F44] via-[#009245] to-[#00D4AA] px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_24px_-10px_rgba(0,146,69,0.6)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_-12px_rgba(0,146,69,0.7)]"
         >
-          Request Consultation
-          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+          <span className="relative z-10">Request Consultation</span>
+          <ArrowRight className="relative z-10 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
         </a>
       </div>
     </header>
@@ -144,28 +166,29 @@ function Nav() {
 function Hero() {
   return (
     <section id="top" className="relative min-h-screen overflow-hidden bg-[var(--navy)] text-white">
+      <div className="absolute inset-0 gradient-hero" />
       <img
         src={heroImg}
-        alt="Premium cargo vessel under management at sea"
-        width={1920}
-        height={1280}
-        className="absolute inset-0 h-full w-full object-cover opacity-50"
+        alt=""
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-cover opacity-20 mix-blend-luminosity"
       />
-      <div className="absolute inset-0 gradient-hero opacity-80" />
-      <div className="absolute inset-0 bg-grid opacity-40" />
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[var(--navy)] to-transparent" />
+      <div className="absolute inset-0 bg-grid opacity-30" />
+      <div className="absolute -left-32 top-1/3 h-[28rem] w-[28rem] rounded-full bg-[var(--emerald-tide)]/15 blur-3xl" />
+      <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-[var(--navy)] to-transparent" />
 
-      <div className="container-premium relative flex min-h-screen flex-col justify-end pb-24 pt-40">
+      <div className="container-premium relative grid min-h-screen items-center gap-12 pb-24 pt-36 md:pt-44 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+       <div>
         <FadeIn>
           <Eyebrow>Premium Boutique Ship Management · India · Cyprus</Eyebrow>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <h1 className="max-w-4xl text-balance text-5xl leading-[1.05] md:text-7xl lg:text-[5.5rem]">
+          <h1 className="max-w-3xl text-balance text-5xl leading-[1.05] md:text-6xl lg:text-7xl">
             Ship Management <span className="italic text-[var(--emerald-glow)]">without</span> corporate layers.
           </h1>
         </FadeIn>
         <FadeIn delay={0.2}>
-          <p className="mt-8 max-w-2xl text-lg text-white/70 md:text-xl">
+          <p className="mt-8 max-w-xl text-lg text-white/75 md:text-xl">
             Direct access to maritime experts, faster technical decisions, dedicated vessel
             support, and global standards — delivered from India and Cyprus.
           </p>
@@ -189,7 +212,7 @@ function Hero() {
         </FadeIn>
 
         <FadeIn delay={0.5}>
-          <div className="mt-20 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-white/10 pt-10 md:grid-cols-4">
+          <div className="mt-14 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-white/10 pt-8 md:grid-cols-2 xl:grid-cols-4">
             {[
               ["Technical Management", Wrench],
               ["Crew Management", Users],
@@ -206,12 +229,198 @@ function Hero() {
             })}
           </div>
         </FadeIn>
+       </div>
+
+       <FadeIn delay={0.2}>
+         <HeroVisual />
+       </FadeIn>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50">
           <ChevronDown className="h-5 w-5 animate-bounce" />
         </div>
       </div>
     </section>
+  );
+}
+
+/* -------------------- HERO VISUAL (animated cargo vessel + data overlay) -------------------- */
+
+function HeroVisual() {
+  return (
+    <div className="relative aspect-[5/4] w-full">
+      {/* glow ring */}
+      <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,rgba(0,212,170,0.18),transparent_60%)]" />
+
+      <motion.div
+        animate={{ y: [0, -8, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute inset-0"
+      >
+        <svg viewBox="0 0 600 480" className="h-full w-full" aria-label="Animated cargo vessel with maritime intelligence overlay">
+          <defs>
+            <linearGradient id="hullGrad" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#0A2A5E" />
+              <stop offset="100%" stopColor="#041B3D" />
+            </linearGradient>
+            <linearGradient id="deckGrad" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="#E6EEF8" />
+              <stop offset="100%" stopColor="#9BB3CC" />
+            </linearGradient>
+            <linearGradient id="oceanGrad" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#00D4AA" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#0A2A5E" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="routeGrad" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="#00D4AA" stopOpacity="0" />
+              <stop offset="50%" stopColor="#00D4AA" />
+              <stop offset="100%" stopColor="#00D4AA" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+
+          {/* concentric radar rings */}
+          {[60, 110, 170, 230].map((r, i) => (
+            <motion.circle
+              key={r}
+              cx="300" cy="240" r={r}
+              fill="none" stroke="#00D4AA" strokeOpacity="0.18" strokeWidth="1"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: [0, 0.6, 0], scale: [0.6, 1.05, 1.2] }}
+              transition={{ duration: 4, repeat: Infinity, delay: i * 0.8, ease: "easeOut" }}
+              style={{ transformOrigin: "300px 240px" }}
+            />
+          ))}
+
+          {/* curved route path */}
+          <motion.path
+            d="M 30 360 Q 200 220 360 280 T 580 180"
+            fill="none" stroke="url(#routeGrad)" strokeWidth="1.5" strokeDasharray="4 6"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ duration: 2, delay: 0.4, ease: "easeOut" }}
+          />
+
+          {/* waypoint dots */}
+          {[[60, 348], [220, 248], [400, 272], [560, 192]].map(([x, y], i) => (
+            <motion.g key={i}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ delay: 1 + i * 0.2 }}
+            >
+              <circle cx={x} cy={y} r="3" fill="#00D4AA" />
+              <motion.circle cx={x} cy={y} r="3" fill="none" stroke="#00D4AA"
+                animate={{ r: [3, 12], opacity: [0.7, 0] }}
+                transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
+              />
+            </motion.g>
+          ))}
+
+          {/* ship group, gentle drift forward */}
+          <motion.g
+            initial={{ x: -30, opacity: 0 }}
+            animate={{ x: [0, 6, 0], opacity: 1 }}
+            transition={{
+              x: { duration: 5, repeat: Infinity, ease: "easeInOut" },
+              opacity: { duration: 1, delay: 0.3 },
+            }}
+          >
+            {/* hull */}
+            <path
+              d="M 130 290 L 470 290 L 440 340 L 160 340 Z"
+              fill="url(#hullGrad)" stroke="#00D4AA" strokeOpacity="0.4" strokeWidth="1"
+            />
+            {/* bow accent line */}
+            <line x1="160" y1="340" x2="180" y2="290" stroke="#00D4AA" strokeOpacity="0.6" />
+            {/* deck */}
+            <rect x="160" y="270" width="280" height="22" fill="url(#deckGrad)" opacity="0.85" />
+            {/* containers */}
+            {Array.from({ length: 12 }).map((_, i) => {
+              const colors = ["#00D4AA", "#E6EEF8", "#0A2A5E", "#9BB3CC"];
+              return (
+                <motion.rect
+                  key={i}
+                  x={170 + i * 22} y={240} width={20} height={32}
+                  fill={colors[i % colors.length]} opacity={0.9}
+                  initial={{ y: 200, opacity: 0 }}
+                  animate={{ y: 240, opacity: 0.9 }}
+                  transition={{ delay: 0.6 + i * 0.06, duration: 0.5, ease: "easeOut" }}
+                />
+              );
+            })}
+            {/* bridge / superstructure */}
+            <rect x="380" y="210" width="60" height="60" fill="#0A2A5E" stroke="#00D4AA" strokeOpacity="0.5" />
+            <rect x="390" y="220" width="40" height="10" fill="#00D4AA" opacity="0.6" />
+            <rect x="390" y="236" width="40" height="6" fill="#9BB3CC" opacity="0.5" />
+            {/* funnel */}
+            <rect x="402" y="186" width="16" height="24" fill="#041B3D" stroke="#00D4AA" strokeOpacity="0.5" />
+            <rect x="404" y="190" width="12" height="4" fill="#00C389" />
+            {/* mast */}
+            <line x1="410" y1="186" x2="410" y2="150" stroke="#E6EEF8" strokeOpacity="0.6" />
+            <circle cx="410" cy="150" r="2" fill="#00D4AA" />
+            <motion.circle cx="410" cy="150" r="2" fill="none" stroke="#00D4AA"
+              animate={{ r: [2, 8], opacity: [0.8, 0] }}
+              transition={{ duration: 1.8, repeat: Infinity }}
+            />
+          </motion.g>
+
+          {/* ocean waves */}
+          <motion.path
+            d="M 0 360 Q 75 350 150 360 T 300 360 T 450 360 T 600 360 L 600 480 L 0 480 Z"
+            fill="url(#oceanGrad)"
+            animate={{ d: [
+              "M 0 360 Q 75 350 150 360 T 300 360 T 450 360 T 600 360 L 600 480 L 0 480 Z",
+              "M 0 360 Q 75 370 150 360 T 300 360 T 450 360 T 600 360 L 600 480 L 0 480 Z",
+              "M 0 360 Q 75 350 150 360 T 300 360 T 450 360 T 600 360 L 600 480 L 0 480 Z",
+            ]}}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.path
+            d="M 0 380 Q 100 372 200 380 T 400 380 T 600 380 L 600 480 L 0 480 Z"
+            fill="#0A2A5E" opacity="0.45"
+            animate={{ d: [
+              "M 0 380 Q 100 372 200 380 T 400 380 T 600 380 L 600 480 L 0 480 Z",
+              "M 0 380 Q 100 388 200 380 T 400 380 T 600 380 L 600 480 L 0 480 Z",
+              "M 0 380 Q 100 372 200 380 T 400 380 T 600 380 L 600 480 L 0 480 Z",
+            ]}}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          {/* light reflection on water */}
+          <motion.ellipse cx="300" cy="400" rx="180" ry="6" fill="#00D4AA" opacity="0.2"
+            animate={{ opacity: [0.1, 0.3, 0.1], cx: [280, 320, 280] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          {/* floating particles */}
+          {Array.from({ length: 14 }).map((_, i) => {
+            const x = 40 + ((i * 47) % 540);
+            const y = 60 + ((i * 31) % 260);
+            return (
+              <motion.circle
+                key={i} cx={x} cy={y} r="1.2" fill="#00D4AA"
+                animate={{ y: [y, y - 12, y], opacity: [0.2, 0.8, 0.2] }}
+                transition={{ duration: 4 + (i % 3), repeat: Infinity, delay: i * 0.3, ease: "easeInOut" }}
+              />
+            );
+          })}
+
+          {/* data readouts */}
+          <motion.g
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 1.4, duration: 0.8 }}
+          >
+            <line x1="470" y1="250" x2="540" y2="220" stroke="#00D4AA" strokeOpacity="0.5" />
+            <rect x="540" y="200" width="56" height="40" fill="#041B3D" stroke="#00D4AA" strokeOpacity="0.5" rx="2" />
+            <text x="546" y="216" fill="#00D4AA" fontSize="9" fontFamily="monospace">SPEED</text>
+            <text x="546" y="232" fill="#E6EEF8" fontSize="11" fontFamily="monospace">14.2 kn</text>
+
+            <line x1="170" y1="260" x2="80" y2="220" stroke="#00D4AA" strokeOpacity="0.5" />
+            <rect x="14" y="200" width="70" height="40" fill="#041B3D" stroke="#00D4AA" strokeOpacity="0.5" rx="2" />
+            <text x="20" y="216" fill="#00D4AA" fontSize="9" fontFamily="monospace">STATUS</text>
+            <text x="20" y="232" fill="#E6EEF8" fontSize="11" fontFamily="monospace">ON ROUTE</text>
+          </motion.g>
+        </svg>
+      </motion.div>
+    </div>
   );
 }
 
