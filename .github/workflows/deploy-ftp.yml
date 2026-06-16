@@ -1,0 +1,47 @@
+name: Deploy ReactJS App to FTP
+
+on:
+  push:
+     branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: "ftp-deploy"
+  cancel-in-progress: true
+
+env:
+  FTP_USER: ${{ vars.FTP_USER }}
+  FTP_HOST: ${{ vars.FTP_HOST }}
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.0.1
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build React App
+        run: npm run build
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ env.FTP_HOST }}
+          username: ${{ env.FTP_USER }}
+          password: ${{ secrets.FTP_PASS }}
+          server-dir: /
+          local-dir: dist/
+          exclude: |
+            **/.git*
+            **/node_modules/**
+            **/src/**
+            **/public/**
