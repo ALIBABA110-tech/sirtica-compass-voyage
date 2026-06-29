@@ -1,9 +1,9 @@
-name: Deploy Vite React App to FTP
+name: Deploy React (Vite) App to FTP
 
 on:
   push:
     branches:
-      - deploy
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -19,28 +19,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Display Node & NPM Version
+        run: |
+          node -v
+          npm -v
 
-      - name: Build
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Project
         run: npm run build
 
-      - name: Verify build
+      - name: Verify Build Output
         run: ls -la dist
 
-      - name: FTP Deploy
+      - name: Deploy to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ env.FTP_HOST }}
           username: ${{ env.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          server-dir: public_html/
-          local-dir: dist/
+          server-dir: /
+          local-dir: ./dist/
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/src/**
+            **/public/**
