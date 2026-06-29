@@ -3,7 +3,7 @@ name: Deploy TanStack Start App to FTP
 on:
   push:
     branches:
-      - main
+      - deploy
   workflow_dispatch:
 
 concurrency:
