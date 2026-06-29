@@ -1,12 +1,13 @@
-name: Deploy ReactJS App to FTP
+name: Deploy TanStack Start App to FTP
 
 on:
   push:
-     branches: ["main"]
+    branches:
+      - deploy
   workflow_dispatch:
 
 concurrency:
-  group: "ftp-deploy"
+  group: ftp-deploy
   cancel-in-progress: true
 
 env:
@@ -15,33 +16,43 @@ env:
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@v4
         with:
-          node-version: 24.x
+          node-version: 22
+          cache: npm
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Build React App
+      - name: Build Application
         run: npm run build
 
-      - name: FTP Deploy
+      - name: Deploy Project
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ env.FTP_HOST }}
           username: ${{ env.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
+
+          # Change this to your Node.js app directory
           server-dir: /
-          local-dir: dist/
+
+          # Upload the entire project
+          local-dir: ./
+
           exclude: |
             **/.git*
+            **/.github/**
+            **/.vscode/**
             **/node_modules/**
-            **/src/**
-            **/public/**
+            **/.idea/**
+            **/.DS_Store
+            **/*.log
+            .env

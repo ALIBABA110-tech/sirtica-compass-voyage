@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import heroImg from "@/assets/hero-vessel.jpg";
 import sirticaLogo from "@/assets/sirtica-logo.png.asset.json";
+import logo from "@/assets/sirtica-png-1.png"
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -129,7 +130,7 @@ function Nav() {
           whileHover={{ y: -1 }}
         >
           <motion.img
-            src={sirticaLogo.url}
+            src={logo}
             alt="Sirtica Maritime Pvt. Ltd."
             className="h-16 w-auto md:h-20"
             animate={{ y: [0, -2, 0] }}
