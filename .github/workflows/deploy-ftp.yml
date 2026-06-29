@@ -1,9 +1,9 @@
-name: Deploy React (Vite) App to FTP
+name: Deploy TanStack Start App to FTP
 
 on:
   push:
     branches:
-      - deploy
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -28,31 +28,31 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Display Node & NPM Version
-        run: |
-          node -v
-          npm -v
-
       - name: Install Dependencies
         run: npm install
 
-      - name: Build Project
+      - name: Build Application
         run: npm run build
 
-      - name: Verify Build Output
-        run: ls -la dist
-
-      - name: Deploy to FTP
+      - name: Deploy Project
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ env.FTP_HOST }}
           username: ${{ env.FTP_USER }}
           password: ${{ secrets.FTP_PASS }}
-          server-dir: /
-          local-dir: ./dist/
+
+          # Change this to your Node.js app directory
+          server-dir: /www/sirtica.cubosquare.in/
+
+          # Upload the entire project
+          local-dir: ./
+
           exclude: |
             **/.git*
             **/.github/**
+            **/.vscode/**
             **/node_modules/**
-            **/src/**
-            **/public/**
+            **/.idea/**
+            **/.DS_Store
+            **/*.log
+            .env
